@@ -7,7 +7,7 @@ DEFAULT_STEAMAPPS_PATH="${HOME}/.local/share/Steam/steamapps"
 # Add your additional library paths to this array
 STEAMAPPS_PATHS=(
     "${DEFAULT_STEAMAPPS_PATH}"
-    "/run/media/data/SteamLibrary/steamapps"
+    # <-- Add your custom path here (for example: "/run/media/data/SteamLibrary/steamapps" )
 )
 
 # Check if at least one of the defined Steam paths exists
