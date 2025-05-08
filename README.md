@@ -90,11 +90,13 @@ Now you should be able to run the `steamls` command from any directory in your t
     ```
 
 * **Find the compatdata folder for a specific game (using a pattern):**
+
     Provide a pattern as an argument. The matching is case-insensitive.
     ```bash
     steamls "Borderlands"
     ```
     This would match games like "Borderlands GOTY Enhanced" and "Borderlands 3".
+
     Example Output:
     ```
     Compatdata Folder: 397540 -> Game: Borderlands 3
@@ -106,6 +108,7 @@ Now you should be able to run the `steamls` command from any directory in your t
     steamls "FINAL.*HD"
     ```
     This regular expression would match "FINAL FANTASY X/X-2 HD Remaster".
+
     Example Output:
     ```
     Compatdata Folder: 359870 -> Game: FINAL FANTASY X/X-2 HD Remaster
