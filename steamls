@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Define the default Steam library path
+DEFAULT_STEAMAPPS_PATH="${HOME}/.local/share/Steam/steamapps"
+
+# Define an array of Steam library steamapps paths to search
+# Add your additional library paths to this array
+STEAMAPPS_PATHS=(
+    "${DEFAULT_STEAMAPPS_PATH}"
+    "/run/media/data/SteamLibrary/steamapps"
+)
+
+# Check if at least one of the defined Steam paths exists
+found_steam_path=false
+for steam_path in "${STEAMAPPS_PATHS[@]}"; do
+    if [ -d "${steam_path}" ]; then
+        found_steam_path=true
+        break
+    fi
+done
+
+if [ "$found_steam_path" = false ]; then
+    echo "No Steam library paths found. Please check the STEAMAPPS_PATHS array in the script."
+    exit 1
+fi
+
+# Build the find command arguments dynamically from the array
+FIND_PATHS=""
+for steam_path in "${STEAMAPPS_PATHS[@]}"; do
+    if [ -d "${steam_path}" ]; then
+        FIND_PATHS+=" \"${steam_path}\""
+    fi
+done
+
+# Check if a game name pattern was provided
+if [ $# -eq 0 ]; then
+    # No parameter provided, list all games and compatdata folders
+    eval "find ${FIND_PATHS} -maxdepth 1 -name 'appmanifest_*.acf' -print0" | while IFS= read -r -d '' file; do
+        appid=$(basename "$file" | sed 's/appmanifest_\(.*\)\.acf/\1/')
+        game_name=$(grep -Po '"name"\s+"\K[^"]+' "$file")
+        if [ -n "$game_name" ]; then
+            echo "Compatdata Folder: $appid -> Game: $game_name"
+        fi
+    done | sort -V
+else
+    # Parameter provided, filter by game name pattern
+    GAME_PATTERN="$*" # Capture all arguments as a single pattern
+
+    eval "find ${FIND_PATHS} -maxdepth 1 -name 'appmanifest_*.acf' -print0" | while IFS= read -r -d '' file; do
+        appid=$(basename "$file" | sed 's/appmanifest_\(.*\)\.acf/\1/')
+        game_name=$(grep -Po '"name"\s+"\K[^"]+' "$file")
+
+        # Use case-insensitive regex matching on the game name
+        if [ -n "$game_name" ]; then
+            if [[ "$game_name" =~ ${GAME_PATTERN} ]]; then
+                echo "Compatdata Folder: $appid -> Game: $game_name"
+            fi
+        fi
+    done | sort -V
+fi
